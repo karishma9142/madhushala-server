@@ -3,6 +3,7 @@ export interface IUser {
     username: string;
     password: string;
     email: string;
+    role: string;
 }
 export declare const UserModer: mongoose.Model<IUser, {}, {}, {}, mongoose.Document<unknown, {}, IUser, {}, mongoose.DefaultSchemaOptions> & IUser & {
     _id: mongoose.Types.ObjectId;

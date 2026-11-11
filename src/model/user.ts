@@ -3,7 +3,8 @@ import mongoose, { Schema } from "mongoose";
 export interface IUser {
     username : string,
     password : string,
-    email : string
+    email : string,
+    role : string
 }
 
 const userSchema = new Schema<IUser>({
@@ -19,7 +20,12 @@ const userSchema = new Schema<IUser>({
         type : String,
         required : true,
         unique : true
-    }
+    },
+    role: {
+    type: String,
+    enum: ["admin", "customer"],
+    default: "customer"
+}
 });
 
 export const UserModer = mongoose.model<IUser>('user' , userSchema);
