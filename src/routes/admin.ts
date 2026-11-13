@@ -7,4 +7,4 @@ const AdminRouter = express.Router();
 
 AdminRouter.post('/addItem' , IsAuth , Admin , AddItem);
 
-export default AddItem;
+export default AdminRouter;

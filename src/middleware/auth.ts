@@ -1,43 +1,59 @@
-import jwt, { type JwtPayload }  from 'jsonwebtoken';
-import type { NextFunction, Request, Response } from 'express';
-import type { IUser } from '../model/user.js';
 
-export interface AuthenticatedRequest extends Request{
-    user?: IUser | null
-}
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import type { Request, Response, NextFunction } from "express";
+import { UserModer } from "../model/user.js";
 
-export const IsAuth = async(req:AuthenticatedRequest,res : Response,next:NextFunction):
-Promise<void> => {
+export const IsAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
     try {
         const authHeader = req.headers.authorization;
-        if(!authHeader || !authHeader.startsWith("Bearer ")){
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             res.status(401).json({
-                msg : "not autherise please login"
+                msg: "Please login"
             });
             return;
         }
+
         const token = authHeader.split(" ")[1];
 
-        if(!token){
+        if (!token) {
             res.status(401).json({
-                msg : "token missing"
+                msg: "Token missing"
             });
             return;
         }
 
-        const decoded = jwt.verify(token , process.env.JWT_SEC as string)as JwtPayload;
-        if(!decoded || !decoded.user){
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SEC!
+        ) as JwtPayload;
+
+        const user = await UserModer.findById(decoded.id);
+
+        if (!user) {
             res.status(401).json({
-                msg : "invalid token"
+                msg: "User not found"
             });
             return;
         }
 
-        req.user = decoded.user;
+        req.user = {
+            _id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        };
+
         next();
+
     } catch (error) {
-        res.status(500).json({
-            msg : "please login - jwt error"
-        })
+        console.log(error);
+
+        res.status(401).json({
+            msg: "Invalid or expired token"
+        });
     }
-}
+};

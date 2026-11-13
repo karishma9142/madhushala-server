@@ -1,8 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import type { IUser } from "../model/user.js";
 
-export interface AuthenticatedRequest extends Request{
-    user?: IUser | null
+export interface AuthenticatedRequest extends Request {
+    user? : {
+        _id: string;
+        email: string;
+        role: string;
+    };
 }
 const Admin = async (req:AuthenticatedRequest , res:Response , next : NextFunction) => {
     try {
